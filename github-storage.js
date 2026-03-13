@@ -1,27 +1,25 @@
-
-
 // ═══════════════════════════════════════════════
-// GITHUB STORAGE - Configuração
+// GITHUB STORAGE - CONFIGURAÇÃO
 // ═══════════════════════════════════════════════
-// ⚠️ PREENCHA OS 3 CAMPOS ABAIXO:
+
 const GITHUB_CONFIG = {
-  token: "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",           // Fine-grained PAT
-  owner: "Asa7a2",                     // Nome da org ou usuário do GitHub
-  repo:  "Dashboard-KA",                        // Nome do repositório
-  path:  "data/dados.json",                     // Caminho do arquivo no repo
-  branch: "main"                                // Branch principal
+  owner: "Asa7a2",
+  repo: "Dashboard-KA",
+  token: "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"
 };
 
+
 // ═══════════════════════════════════════════════
-// FUNÇÕES DE LEITURA/ESCRITA
+// CARREGAR DADOS DO GITHUB
 // ═══════════════════════════════════════════════
 
-let _fileSha = null; // SHA do arquivo (necessário para atualizar)
-
-// Ler dados do GitHub
 async function githubLoad() {
+
   try {
-    const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}?ref=${GITHUB_CONFIG.branch}&t=${Date.now()}`;
+
+    const url =
+      `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/data/dados.json`;
+
     const res = await fetch(url, {
       headers: {
         "Authorization": `Bearer ${GITHUB_CONFIG.token}`,
@@ -30,72 +28,81 @@ async function githubLoad() {
     });
 
     if (!res.ok) {
-      if (res.status === 404) {
-        console.log("Arquivo não encontrado, será criado no primeiro salvamento.");
-        return null;
-      }
-      throw new Error(`GitHub API: ${res.status}`);
+      console.log("Arquivo ainda não existe.");
+      return null;
     }
 
     const json = await res.json();
-    _fileSha = json.sha;
 
-    // Decodificar conteúdo Base64
     const content = atob(json.content.replace(/\n/g, ""));
-    const data = JSON.parse(content);
-    return data;
+
+    return JSON.parse(content);
 
   } catch (e) {
+
     console.error("Erro ao carregar do GitHub:", e);
+
     return null;
   }
+
 }
 
-// Salvar dados no GitHub
+
+
+// ═══════════════════════════════════════════════
+// SALVAR DADOS USANDO GITHUB ACTION
+// ═══════════════════════════════════════════════
+
 async function githubSave(data) {
+
   try {
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-    
-    const body = {
-      message: `Atualização OTIF - ${new Date().toLocaleString("pt-BR")}`,
-      content: content,
-      branch: GITHUB_CONFIG.branch
-    };
 
-    // Se o arquivo já existe, precisamos do SHA
-    if (_fileSha) {
-      body.sha = _fileSha;
-    }
+    const res = await fetch(
+      `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/dispatches`,
+      {
+        method: "POST",
 
-    const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
-    const res = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Authorization": `Bearer ${GITHUB_CONFIG.token}`,
-        "Accept": "application/vnd.github.v3+json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body)
-    });
+        headers: {
+          "Accept": "application/vnd.github+json",
+          "Authorization": `Bearer ${GITHUB_CONFIG.token}`
+        },
+
+        body: JSON.stringify({
+          event_type: "save_data",
+          client_payload: {
+            data: JSON.stringify(data)
+          }
+        })
+      }
+    );
 
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(`GitHub API ${res.status}: ${err.message || ""}`);
+      throw new Error("Erro ao acionar workflow");
     }
 
-    const result = await res.json();
-    _fileSha = result.content.sha; // Atualizar SHA para próxima escrita
+    console.log("Workflow acionado");
+
     return true;
 
   } catch (e) {
-    console.error("Erro ao salvar no GitHub:", e);
+
+    console.error("Erro ao salvar:", e);
+
     return false;
   }
+
 }
 
-// Verificar se a configuração está preenchida
+
+
+// ═══════════════════════════════════════════════
+// VERIFICAR CONFIGURAÇÃO
+// ═══════════════════════════════════════════════
+
 function githubConfigValid() {
-  return GITHUB_CONFIG.token &&
-         GITHUB_CONFIG.owner &&
-         GITHUB_CONFIG.repo;
+  return (
+    GITHUB_CONFIG.token &&
+    GITHUB_CONFIG.owner &&
+    GITHUB_CONFIG.repo
+  );
 }
