@@ -5,7 +5,7 @@
 const GITHUB_CONFIG = {
   owner: "Asa7a2",
   repo: "Dashboard-KA",
-  token: "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"
+  token: "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"
 };
 
 
