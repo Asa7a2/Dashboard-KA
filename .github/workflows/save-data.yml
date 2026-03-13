@@ -1,0 +1,25 @@
+name: Save Dashboard Data
+
+on:
+  repository_dispatch:
+    types: [save_data]
+
+jobs:
+  save:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Save data
+        run: |
+          echo '${{ github.event.client_payload.data }}' > data/dados.json
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/dados.json
+          git commit -m "Atualização OTIF automática"
+          git push
