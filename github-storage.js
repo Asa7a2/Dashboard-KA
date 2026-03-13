@@ -1,11 +1,13 @@
+
+
 // ═══════════════════════════════════════════════
 // GITHUB STORAGE - Configuração
 // ═══════════════════════════════════════════════
 // ⚠️ PREENCHA OS 3 CAMPOS ABAIXO:
 const GITHUB_CONFIG = {
-  token: "ghp_COLE_SEU_TOKEN_AQUI",           // Fine-grained PAT
-  owner: "sua-organizacao",                     // Nome da org ou usuário do GitHub
-  repo:  "otif-sistema",                        // Nome do repositório
+  token: "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",           // Fine-grained PAT
+  owner: "Asa7a2",                     // Nome da org ou usuário do GitHub
+  repo:  "Dashboard-KA",                        // Nome do repositório
   path:  "data/dados.json",                     // Caminho do arquivo no repo
   branch: "main"                                // Branch principal
 };
