@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════
 // ⚠️ PREENCHA OS 3 CAMPOS ABAIXO:
 const GITHUB_CONFIG = {
-  token: "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",           // Fine-grained PAT
+  token: "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",           // Fine-grained PAT
   owner: "Asa7a2",                     // Nome da org ou usuário do GitHub
   repo:  "Dashboard-KA",                        // Nome do repositório
   path:  "data/dados.json",                     // Caminho do arquivo no repo
