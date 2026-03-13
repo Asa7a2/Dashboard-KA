@@ -3,7 +3,7 @@ async function githubSave(data) {
   await fetch("https://api.github.com/repos/Asa7a2/Dashboard-KA/dispatches", {
     method: "POST",
     headers: {
-      "Authorization": "Bearer SEU_TOKEN",
+      "Authorization": "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",
       "Accept": "application/vnd.github+json"
     },
     body: JSON.stringify({
