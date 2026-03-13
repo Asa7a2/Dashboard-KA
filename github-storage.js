@@ -93,7 +93,7 @@ async function githubSave(data) {
 
 // Verificar se a configuração está preenchida
 function githubConfigValid() {
-  return GITHUB_CONFIG.token !== "ghp_COLE_SEU_TOKEN_AQUI" &&
-         GITHUB_CONFIG.owner !== "sua-organizacao" &&
-         GITHUB_CONFIG.repo !== "otif-sistema";
+  return GITHUB_CONFIG.token &&
+         GITHUB_CONFIG.owner &&
+         GITHUB_CONFIG.repo;
 }
